@@ -85,75 +85,14 @@ def setup_container() -> None:
     container.register(ReviewHistoryDAO, factory=SqlAlchemyReviewHistoryDAO, scope=punq.Scope.transient)
 
     # --- use cases ---
-    container.register(
-        LogReadingItemUseCase,
-        factory=lambda: LogReadingItemUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            reading_item_dao=container.resolve(ReadingItemDAO),
-            review_card_dao=container.resolve(ReviewCardDAO),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        ListReadingItemsUseCase,
-        factory=lambda: ListReadingItemsUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            reading_item_dao=container.resolve(ReadingItemDAO),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        GetReadingStatsUseCase,
-        factory=lambda: GetReadingStatsUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            reading_item_dao=container.resolve(ReadingItemDAO),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        GetDueReviewsUseCase,
-        factory=lambda: GetDueReviewsUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            review_card_dao=container.resolve(ReviewCardDAO),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        GenerateReviewQuestionUseCase,
-        factory=lambda: GenerateReviewQuestionUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            review_card_dao=container.resolve(ReviewCardDAO),
-            reading_item_dao=container.resolve(ReadingItemDAO),
-            llm_client=container.resolve(LLMClient),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        SubmitReviewGradeUseCase,
-        factory=lambda: SubmitReviewGradeUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            review_card_dao=container.resolve(ReviewCardDAO),
-            review_history_dao=container.resolve(ReviewHistoryDAO),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        GetRetentionStatsUseCase,
-        factory=lambda: GetRetentionStatsUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            review_card_dao=container.resolve(ReviewCardDAO),
-        ),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        GenerateWeeklySummaryUseCase,
-        factory=lambda: GenerateWeeklySummaryUseCase(
-            transaction_context=container.resolve(ITransactionContext),
-            reading_item_dao=container.resolve(ReadingItemDAO),
-            llm_client=container.resolve(LLMClient),
-        ),
-        scope=punq.Scope.transient,
-    )
+    container.register(LogReadingItemUseCase, scope=punq.Scope.transient)
+    container.register(ListReadingItemsUseCase, scope=punq.Scope.transient)
+    container.register(GetReadingStatsUseCase, scope=punq.Scope.transient)
+    container.register(GetDueReviewsUseCase, scope=punq.Scope.transient)
+    container.register(GenerateReviewQuestionUseCase, scope=punq.Scope.transient)
+    container.register(SubmitReviewGradeUseCase, scope=punq.Scope.transient)
+    container.register(GetRetentionStatsUseCase, scope=punq.Scope.transient)
+    container.register(GenerateWeeklySummaryUseCase, scope=punq.Scope.transient)
 
     _initialized = True
 

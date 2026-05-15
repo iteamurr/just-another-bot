@@ -17,8 +17,6 @@ pydantic-settings = "2.6.1"
 punq = "0.6.2"
 httpx = "0.28.0"
 openai = "1.57.0"
-aiosql = "13.3"
-pypika = "0.48.9"
 streamlit = "1.40.2"
 
 [tool.poetry.group.dev.dependencies]

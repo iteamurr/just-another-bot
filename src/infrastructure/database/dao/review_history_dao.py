@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.review.dao import ReviewHistoryDAO
@@ -20,8 +19,10 @@ class SqlAlchemyReviewHistoryDAO(ReviewHistoryDAO):
         return entry
 
     async def list_by_card(self, card_id: str) -> list[ReviewHistoryEntry]:
-        sql = text("SELECT * FROM review_history" " WHERE card_id = :card_id" " ORDER BY reviewed_at DESC")
-        result = await self._session.execute(sql, {"card_id": card_id})
-        rows = result.mappings().all()
-        models = [ReviewHistoryModel(**dict(row)) for row in rows]
-        return [review_history_mapper.model_to_review_history_entry(m) for m in models]
+        query = (
+            self._session.query(ReviewHistoryModel)
+            .where(ReviewHistoryModel.card_id == card_id)
+            .order_by(ReviewHistoryModel.reviewed_at.desc())
+        )
+        result = await self._session.execute(query)
+        return [review_history_mapper.model_to_review_history_entry(m) for m in result.scalars()]

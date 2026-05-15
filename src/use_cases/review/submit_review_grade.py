@@ -8,6 +8,7 @@ from src.domain.review.dao import ReviewCardDAO, ReviewHistoryDAO
 from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
 from src.domain.review.exceptions import ReviewCardNotFoundException
 from src.domain.review.value_objects import Grade
+from src.domain.transaction import ITransactionContext
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -28,26 +29,27 @@ class SubmitReviewGradeResult:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class SubmitReviewGradeUseCase:
+    transaction_context: ITransactionContext
     review_card_dao: ReviewCardDAO
     review_history_dao: ReviewHistoryDAO
 
     async def execute(self, command: SubmitReviewGradeCommand) -> SubmitReviewGradeResult:
-        card = await self.review_card_dao.get_by_id(command.card_id)
-        if card is None:
-            raise ReviewCardNotFoundException(card_id=command.card_id)
+        async with self.transaction_context:
+            card = await self.review_card_dao.get_by_id(command.card_id)
+            if card is None:
+                raise ReviewCardNotFoundException(card_id=command.card_id)
 
-        now = datetime.now(tz=UTC)
-        card.apply_grade(command.grade, now)
+            now = datetime.now(tz=UTC)
+            card.apply_grade(command.grade, now)
 
-        entry = ReviewHistoryEntry(
-            card_id=card.id,
-            grade=command.grade.value,
-            ease_factor_after=card.ease_factor.value,
-            interval_days_after=card.interval_days,
-            reviewed_at=now,
-        )
+            entry = ReviewHistoryEntry(
+                card_id=card.id,
+                grade=command.grade.value,
+                ease_factor_after=card.ease_factor.value,
+                interval_days_after=card.interval_days,
+                reviewed_at=now,
+            )
 
-        saved_card = await self.review_card_dao.save(card)
-        saved_entry = await self.review_history_dao.append(entry)
-
-        return SubmitReviewGradeResult(card=saved_card, history_entry=saved_entry)
+            saved_card = await self.review_card_dao.save(card)
+            saved_entry = await self.review_history_dao.append(entry)
+            return SubmitReviewGradeResult(card=saved_card, history_entry=saved_entry)

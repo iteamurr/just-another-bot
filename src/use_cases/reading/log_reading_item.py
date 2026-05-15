@@ -9,6 +9,7 @@ from src.domain.reading.entities import ReadingItem
 from src.domain.reading.value_objects import ReadingSource, SourceKind, Takeaway
 from src.domain.review.dao import ReviewCardDAO
 from src.domain.review.entities import ReviewCard
+from src.domain.transaction import ITransactionContext
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -47,23 +48,21 @@ class LogReadingItemResult:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class LogReadingItemUseCase:
+    transaction_context: ITransactionContext
     reading_item_dao: ReadingItemDAO
     review_card_dao: ReviewCardDAO
 
     async def execute(self, command: LogReadingItemCommand) -> LogReadingItemResult:
-        item = ReadingItem(
-            title=command.title,
-            source=command.source,
-            takeaway=command.takeaway,
-            tags=list(command.tags),
-            finished_at=command.finished_at,
-            created_at=datetime.now(tz=UTC),
-        )
-        # карточка SM-2 создаётся атомарно вместе с элементом
-        card = ReviewCard(
-            item_id=item.id,
-            due_at=datetime.now(tz=UTC),
-        )
-        saved_item = await self.reading_item_dao.save(item)
-        saved_card = await self.review_card_dao.save(card)
-        return LogReadingItemResult(item=saved_item, card=saved_card)
+        async with self.transaction_context:
+            item = ReadingItem(
+                title=command.title,
+                source=command.source,
+                takeaway=command.takeaway,
+                tags=list(command.tags),
+                finished_at=command.finished_at,
+                created_at=datetime.now(tz=UTC),
+            )
+            card = ReviewCard(item_id=item.id, due_at=datetime.now(tz=UTC))
+            saved_item = await self.reading_item_dao.save(item)
+            saved_card = await self.review_card_dao.save(card)
+            return LogReadingItemResult(item=saved_item, card=saved_card)

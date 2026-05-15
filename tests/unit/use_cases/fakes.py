@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from src.domain.llm.client import LLMClient
 from src.domain.reading.dao import ReadingItemDAO
 from src.domain.reading.entities import ReadingItem
-from src.domain.review.dao import ReviewCardDAO, ReviewHistoryDAO
+from src.domain.review.dao import RetentionStats, ReviewCardDAO, ReviewHistoryDAO
 from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
 
 if TYPE_CHECKING:
@@ -71,8 +71,8 @@ class InMemoryReviewCardDAO(ReviewCardDAO):
     async def count_due(self, *, now: datetime) -> int:
         return sum(1 for c in self._store.values() if c.due_at <= now)
 
-    async def retention_stats(self) -> dict[str, float]:
-        return {"overall_retention": 0.0, "avg_ease_factor": 2.5, "total_reviews": 0.0}
+    async def retention_stats(self) -> RetentionStats:
+        return RetentionStats(overall_retention=0.0, avg_ease_factor=2.5, total_reviews=0)
 
 
 class InMemoryReviewHistoryDAO(ReviewHistoryDAO):

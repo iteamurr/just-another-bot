@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from src.domain.reading.entities import ReadingItem
-    from src.use_cases.reading.get_reading_stats import GetReadingStatsResult
+    from src.use_cases.reading.get_reading_stats import ReadingStatsResult
     from src.use_cases.reading.list_reading_items import ListReadingItemsResult
 
 
@@ -79,7 +79,7 @@ class ReadingStatsResponse(BaseModel):
     by_tag: list[TagCountSchema]
 
     @classmethod
-    def from_domain(cls, result: GetReadingStatsResult) -> ReadingStatsResponse:
+    def from_domain(cls, result: ReadingStatsResult) -> ReadingStatsResponse:
         return cls(
             total_items=result.total_items,
             by_week=[WeekCountSchema(**row) for row in result.by_week],

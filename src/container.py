@@ -79,25 +79,10 @@ def setup_container() -> None:
         scope=punq.Scope.transient,
     )
 
-    # --- сессия: читается из ContextVar, устанавливается транзакционным контекстом ---
-    container.register(AsyncSession, factory=get_request_session, scope=punq.Scope.transient)
-
     # --- DAO ---
-    container.register(
-        ReadingItemDAO,
-        factory=lambda: SqlAlchemyReadingItemDAO(session=container.resolve(AsyncSession)),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        ReviewCardDAO,
-        factory=lambda: SqlAlchemyReviewCardDAO(session=container.resolve(AsyncSession)),
-        scope=punq.Scope.transient,
-    )
-    container.register(
-        ReviewHistoryDAO,
-        factory=lambda: SqlAlchemyReviewHistoryDAO(session=container.resolve(AsyncSession)),
-        scope=punq.Scope.transient,
-    )
+    container.register(ReadingItemDAO, factory=SqlAlchemyReadingItemDAO, scope=punq.Scope.transient)
+    container.register(ReviewCardDAO, factory=SqlAlchemyReviewCardDAO, scope=punq.Scope.transient)
+    container.register(ReviewHistoryDAO, factory=SqlAlchemyReviewHistoryDAO, scope=punq.Scope.transient)
 
     # --- use cases ---
     container.register(

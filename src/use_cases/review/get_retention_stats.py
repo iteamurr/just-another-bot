@@ -22,7 +22,7 @@ class GetRetentionStatsUseCase:
         async with self.transaction_context:
             stats = await self.review_card_dao.retention_stats()
             return RetentionStatsResult(
-                overall_retention=stats["overall_retention"],
-                avg_ease_factor=stats["avg_ease_factor"],
-                total_reviews=int(stats["total_reviews"]),
+                overall_retention=stats.overall_retention,
+                avg_ease_factor=stats.avg_ease_factor,
+                total_reviews=stats.total_reviews,
             )

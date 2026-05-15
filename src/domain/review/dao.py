@@ -1,9 +1,17 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from datetime import datetime
 
 from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class RetentionStats:
+    overall_retention: float
+    avg_ease_factor: float
+    total_reviews: int
 
 
 class ReviewCardDAO(ABC):
@@ -28,7 +36,7 @@ class ReviewCardDAO(ABC):
         """Возвращает количество карточек с наступившей датой повторения"""
 
     @abstractmethod
-    async def retention_stats(self) -> dict[str, float]:
+    async def retention_stats(self) -> RetentionStats:
         """Возвращает агрегированную статистику удержания по всем повторениям"""
 
 

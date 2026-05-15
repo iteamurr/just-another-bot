@@ -6,19 +6,33 @@
 
 ```
 src/
-├── domain/          # чистая доменная логика, без фреймворков
-│   ├── reading/     # bounded context: материалы
-│   └── review/      # bounded context: карточки SM-2
-├── use_cases/       # application layer, по одному файлу на use case
-├── infrastructure/  # SQLAlchemy, aiosql, LLM-клиенты
-├── presentation/    # FastAPI-роуты и схемы
+├── domain/                # чистая доменная логика, без фреймворков
+│   ├── reading/           # bounded context: материалы
+│   ├── review/            # bounded context: карточки SM-2
+│   ├── llm/               # абстракция LLM-клиента
+│   ├── transaction.py     # ITransactionContext — граница транзакции
+│   └── exceptions.py      # базовый DomainException
+├── use_cases/             # application layer, по одному файлу на use case
+│   ├── reading/
+│   ├── review/
+│   └── insights/
+├── infrastructure/
+│   ├── database/
+│   │   ├── models/        # SQLAlchemy-модели с from_domain / to_domain
+│   │   ├── dao/           # реализации DAO, наследуют BaseDAO
+│   │   └── transaction.py # SqlAlchemyTransactionContext
+│   └── llm/               # OpenAI-клиент и фейк для тестов
+├── presentation/
+│   └── api/v1/            # FastAPI-роуты и Pydantic-схемы с from_domain
+├── settings/              # pydantic-settings по контексту
+├── container.py           # punq DI-контейнер
 └── main.py
-streamlit_app/       # фронтенд, общается с бэкендом только через HTTP
+streamlit_app/             # фронтенд, общается с бэкендом только через HTTP
 ```
 
-**Стек:** FastAPI · SQLAlchemy async · asyncpg · Alembic · punq · aiosql · OpenAI · Streamlit · Postgres
+**Стек:** FastAPI · SQLAlchemy async · asyncpg · Alembic · punq · OpenAI · Streamlit · Postgres
 
-**Принципы:** DDD, SOLID, абсолютные импорты, типизированные сигнатуры, внешние SQL-файлы, domain exception pattern, `.new()` на командах, router-level try/except.
+**Принципы:** DDD, SOLID, абсолютные импорты, типизированные сигнатуры, `ITransactionContext` на use case уровне, domain exception pattern, `.new()` на командах, `from_domain` / `to_domain` на моделях и схемах, router-level try/except.
 
 ## Запуск локально
 
@@ -38,16 +52,11 @@ Alembic-миграции запускаются автоматически пр�
 ## Тесты
 
 ```bash
-pip install -e ".[dev]"
-
 # юнит-тесты (без БД)
 pytest tests/unit -v
 
 # интеграционные тесты (требуют Docker для testcontainers)
 pytest tests/integration -v
-
-# все
-pytest -v
 ```
 
 ## Переменные окружения

@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from src.domain.reading.entities import ReadingItem
+    from src.use_cases.reading.get_reading_stats import GetReadingStatsResult
+    from src.use_cases.reading.list_reading_items import ListReadingItemsResult
 
 
 class ReadingSourceSchema(BaseModel):
@@ -28,12 +34,33 @@ class ReadingItemResponse(BaseModel):
     finished_at: datetime | None
     created_at: datetime
 
+    @classmethod
+    def from_domain(cls, item: ReadingItem) -> ReadingItemResponse:
+        return cls(
+            id=item.id,
+            title=item.title,
+            source=ReadingSourceSchema(kind=item.source.kind.value, url=item.source.url),
+            takeaway=item.takeaway.text,
+            tags=item.tags,
+            finished_at=item.finished_at,
+            created_at=item.created_at,
+        )
+
 
 class ListReadingItemsResponse(BaseModel):
     items: list[ReadingItemResponse]
     total: int
     limit: int
     offset: int
+
+    @classmethod
+    def from_domain(cls, result: ListReadingItemsResult, *, limit: int, offset: int) -> ListReadingItemsResponse:
+        return cls(
+            items=[ReadingItemResponse.from_domain(i) for i in result.items],
+            total=result.total,
+            limit=limit,
+            offset=offset,
+        )
 
 
 class WeekCountSchema(BaseModel):
@@ -50,3 +77,11 @@ class ReadingStatsResponse(BaseModel):
     total_items: int
     by_week: list[WeekCountSchema]
     by_tag: list[TagCountSchema]
+
+    @classmethod
+    def from_domain(cls, result: GetReadingStatsResult) -> ReadingStatsResponse:
+        return cls(
+            total_items=result.total_items,
+            by_week=[WeekCountSchema(**row) for row in result.by_week],
+            by_tag=[TagCountSchema(**row) for row in result.by_tag],
+        )

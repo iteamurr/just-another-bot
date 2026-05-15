@@ -1,11 +1,12 @@
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+package-mode = false
 
 [project]
 name = "spacedreader"
 version = "0.1.0"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "fastapi==0.115.5",
     "uvicorn[standard]==0.32.1",
@@ -42,12 +43,32 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.ruff]
-line-length = 100
-src = ["src"]
+line-length = 120
+target-version = "py312"
+exclude = ["alembic/versions"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM"]
-ignore = ["B008"]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "C90", # complex-structure
+]
+ignore = [
+    "E501",  # line too long
+    "B008",
+    "UP006",
+    "UP035",
+    "C416",
+    "B019",
+    "UP007",
+    "C901",
+    "F821",
+]
 
 [tool.mypy]
 python_version = "3.12"

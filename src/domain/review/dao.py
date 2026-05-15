@@ -9,35 +9,34 @@ from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
 class ReviewCardDAO(ABC):
     @abstractmethod
     async def save(self, card: ReviewCard) -> ReviewCard:
-        pass
+        """Сохраняет или обновляет карточку повторения"""
 
     @abstractmethod
     async def get_by_id(self, card_id: str) -> ReviewCard | None:
-        pass
+        """Возвращает карточку по идентификатору"""
 
     @abstractmethod
     async def get_by_item_id(self, item_id: str) -> ReviewCard | None:
-        pass
+        """Возвращает карточку по идентификатору элемента чтения"""
 
     @abstractmethod
     async def list_due(self, *, now: datetime, limit: int = 20) -> list[ReviewCard]:
-        pass
+        """Возвращает карточки с наступившей датой повторения"""
 
     @abstractmethod
     async def count_due(self, *, now: datetime) -> int:
-        pass
+        """Возвращает количество карточек с наступившей датой повторения"""
 
     @abstractmethod
     async def retention_stats(self) -> dict[str, float]:
-        """Возвращает {overall_retention, avg_ease_factor, total_reviews}"""
-        pass
+        """Возвращает агрегированную статистику удержания по всем повторениям"""
 
 
 class ReviewHistoryDAO(ABC):
     @abstractmethod
     async def append(self, entry: ReviewHistoryEntry) -> ReviewHistoryEntry:
-        pass
+        """Добавляет запись в историю повторений"""
 
     @abstractmethod
     async def list_by_card(self, card_id: str) -> list[ReviewHistoryEntry]:
-        pass
+        """Возвращает историю повторений для карточки"""

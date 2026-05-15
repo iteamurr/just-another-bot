@@ -8,11 +8,11 @@ from src.domain.reading.entities import ReadingItem
 class ReadingItemDAO(ABC):
     @abstractmethod
     async def save(self, item: ReadingItem) -> ReadingItem:
-        pass
+        """Сохраняет или обновляет элемент чтения"""
 
     @abstractmethod
     async def get_by_id(self, item_id: str) -> ReadingItem | None:
-        pass
+        """Возвращает элемент чтения по идентификатору"""
 
     @abstractmethod
     async def list(
@@ -22,18 +22,16 @@ class ReadingItemDAO(ABC):
         limit: int = 20,
         offset: int = 0,
     ) -> list[ReadingItem]:
-        pass
+        """Возвращает список элементов с фильтрацией по тегу и пагинацией"""
 
     @abstractmethod
     async def count(self, *, tag: str | None = None) -> int:
-        pass
+        """Возвращает количество элементов, опционально по тегу"""
 
     @abstractmethod
     async def count_by_week(self) -> list[dict[str, int]]:
-        """Количество добавлений по неделям за последние 12 недель: [{week, count}]"""
-        pass
+        """Возвращает количество добавлений по неделям за последние 12 недель"""
 
     @abstractmethod
     async def count_by_tag(self) -> list[dict[str, int]]:
-        """Количество элементов по тегу: [{tag, count}]"""
-        pass
+        """Возвращает количество элементов сгруппированное по тегу"""

@@ -9,7 +9,7 @@ from src.domain.reading.exceptions import (
 )
 from src.domain.review.dao import ReviewCardDAO
 from src.presentation.api.dependencies import get_reading_item_dao, get_review_card_dao
-from src.presentation.api.http_exceptions import DOMAIN_API_HTTP_400, DOMAIN_API_HTTP_404
+from src.presentation.api.http_exceptions import DOMAIN_API_HTTP_400
 from src.presentation.api.v1.reading.schemas import (
     ListReadingItemsResponse,
     LogReadingItemRequest,

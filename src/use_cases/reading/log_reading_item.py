@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Self
 
 from src.domain.reading.dao import ReadingItemDAO
@@ -57,12 +57,12 @@ class LogReadingItemUseCase:
             takeaway=command.takeaway,
             tags=list(command.tags),
             finished_at=command.finished_at,
-            created_at=datetime.now(tz=timezone.utc),
+            created_at=datetime.now(tz=UTC),
         )
         # карточка SM-2 создаётся атомарно вместе с элементом
         card = ReviewCard(
             item_id=item.id,
-            due_at=datetime.now(tz=timezone.utc),
+            due_at=datetime.now(tz=UTC),
         )
         saved_item = await self.reading_item_dao.save(item)
         saved_card = await self.review_card_dao.save(card)

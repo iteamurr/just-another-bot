@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from src.domain.review.value_objects import EaseFactor, Grade
 
@@ -14,7 +14,7 @@ class ReviewCard:
     ease_factor: EaseFactor = field(default_factory=EaseFactor.default)
     interval_days: int = 1
     repetitions: int = 0
-    due_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    due_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
     cached_question: str | None = None
 
     def apply_grade(self, grade: Grade, now: datetime) -> None:
@@ -48,4 +48,4 @@ class ReviewHistoryEntry:
     grade: int
     ease_factor_after: float
     interval_days_after: int
-    reviewed_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    reviewed_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))

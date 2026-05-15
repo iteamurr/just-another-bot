@@ -1,4 +1,5 @@
 """Добавление нового элемента и список недавних"""
+
 from __future__ import annotations
 
 import streamlit as st

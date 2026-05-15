@@ -1,4 +1,4 @@
-from sqlalchemy import ARRAY, String, Text, DateTime
+from sqlalchemy import ARRAY, DateTime, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.infrastructure.database.models.base import Base

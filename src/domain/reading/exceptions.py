@@ -23,9 +23,7 @@ class ReadingItemNotFoundException(ReadingItemError):
 @dataclass
 class InvalidTakeawayLengthException(ReadingItemError):
     alias = "reading_item.invalid_takeaway_length"
-    description_template = (
-        "Длина заметки {actual_length} вне допустимого диапазона [{min_length}, {max_length}]"
-    )
+    description_template = "Длина заметки {actual_length} вне допустимого диапазона [{min_length}, {max_length}]"
     actual_length: int
     min_length: int
     max_length: int

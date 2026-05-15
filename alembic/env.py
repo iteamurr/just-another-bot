@@ -3,15 +3,15 @@ from __future__ import annotations
 import asyncio
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.infrastructure.database.models.base import Base
 # импортируем все модели чтобы Base.metadata их увидел
 import src.infrastructure.database.models.reading_item  # noqa: F401
-import src.infrastructure.database.models.review_card   # noqa: F401
+import src.infrastructure.database.models.review_card  # noqa: F401
 import src.infrastructure.database.models.review_history  # noqa: F401
+from alembic import context
+from src.infrastructure.database.models.base import Base
 from src.settings.postgres import PostgresSettings
 
 config = context.config

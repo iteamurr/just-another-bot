@@ -40,12 +40,7 @@ class SqlAlchemyReviewCardDAO(ReviewCardDAO):
         return review_card_mapper.model_to_review_card(ReviewCardModel(**dict(row)))
 
     async def list_due(self, *, now: datetime, limit: int = 20) -> list[ReviewCard]:
-        sql = text(
-            "SELECT * FROM review_cards"
-            " WHERE due_at <= :now"
-            " ORDER BY due_at ASC"
-            " LIMIT :limit"
-        )
+        sql = text("SELECT * FROM review_cards" " WHERE due_at <= :now" " ORDER BY due_at ASC" " LIMIT :limit")
         result = await self._session.execute(sql, {"now": now, "limit": limit})
         rows = result.mappings().all()
         models = [ReviewCardModel(**dict(row)) for row in rows]

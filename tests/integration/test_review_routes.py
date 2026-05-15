@@ -1,7 +1,7 @@
 """Интеграционные тесты роутов review"""
+
 from __future__ import annotations
 
-import pytest
 from httpx import AsyncClient
 
 
@@ -56,9 +56,7 @@ async def test_submit_grade(api_client: AsyncClient) -> None:
     card_id = await _get_due_card_id(api_client)
     assert card_id is not None
 
-    response = await api_client.post(
-        f"/api/v1/reviews/{card_id}/grade", json={"grade": 4}
-    )
+    response = await api_client.post(f"/api/v1/reviews/{card_id}/grade", json={"grade": 4})
     assert response.status_code == 200
     data = response.json()
     assert data["card_id"] == card_id
@@ -71,9 +69,7 @@ async def test_submit_invalid_grade(api_client: AsyncClient) -> None:
     assert card_id is not None
 
     # FastAPI валидирует ge=0 le=5 на уровне схемы — 422
-    response = await api_client.post(
-        f"/api/v1/reviews/{card_id}/grade", json={"grade": 10}
-    )
+    response = await api_client.post(f"/api/v1/reviews/{card_id}/grade", json={"grade": 10})
     assert response.status_code == 422
 
 

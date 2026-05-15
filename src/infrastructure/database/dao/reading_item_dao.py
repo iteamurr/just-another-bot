@@ -46,11 +46,7 @@ class SqlAlchemyReadingItemDAO(ReadingItemDAO):
             )
             params: dict[str, object] = {"tag": tag, "limit": limit, "offset": offset}
         else:
-            sql = text(
-                "SELECT * FROM reading_items"
-                " ORDER BY created_at DESC"
-                " LIMIT :limit OFFSET :offset"
-            )
+            sql = text("SELECT * FROM reading_items" " ORDER BY created_at DESC" " LIMIT :limit OFFSET :offset")
             params = {"limit": limit, "offset": offset}
 
         result = await self._session.execute(sql, params)

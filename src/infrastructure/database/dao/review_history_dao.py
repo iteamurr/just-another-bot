@@ -20,11 +20,7 @@ class SqlAlchemyReviewHistoryDAO(ReviewHistoryDAO):
         return entry
 
     async def list_by_card(self, card_id: str) -> list[ReviewHistoryEntry]:
-        sql = text(
-            "SELECT * FROM review_history"
-            " WHERE card_id = :card_id"
-            " ORDER BY reviewed_at DESC"
-        )
+        sql = text("SELECT * FROM review_history" " WHERE card_id = :card_id" " ORDER BY reviewed_at DESC")
         result = await self._session.execute(sql, {"card_id": card_id})
         rows = result.mappings().all()
         models = [ReviewHistoryModel(**dict(row)) for row in rows]

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import punq
 import httpx
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+import punq
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from src.domain.llm.client import LLMClient
 from src.infrastructure.database.session import build_session_factory

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Self
 
 from src.domain.review.dao import ReviewCardDAO, ReviewHistoryDAO
@@ -36,7 +36,7 @@ class SubmitReviewGradeUseCase:
         if card is None:
             raise ReviewCardNotFoundException(card_id=command.card_id)
 
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         card.apply_grade(command.grade, now)
 
         entry = ReviewHistoryEntry(

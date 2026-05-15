@@ -1,4 +1,5 @@
 """HTTP-клиент для обращения к FastAPI-бэкенду"""
+
 from __future__ import annotations
 
 import os
@@ -23,13 +24,16 @@ def log_reading_item(
     tags: list[str],
 ) -> dict[str, Any]:
     with _client() as c:
-        r = c.post("/api/v1/reading/items", json={
-            "title": title,
-            "source_kind": source_kind,
-            "source_url": source_url,
-            "takeaway": takeaway,
-            "tags": tags,
-        })
+        r = c.post(
+            "/api/v1/reading/items",
+            json={
+                "title": title,
+                "source_kind": source_kind,
+                "source_url": source_url,
+                "takeaway": takeaway,
+                "tags": tags,
+            },
+        )
         r.raise_for_status()
         return r.json()
 

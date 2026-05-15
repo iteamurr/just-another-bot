@@ -1,4 +1,5 @@
 """Фикстуры интеграционных тестов — реальный Postgres через testcontainers"""
+
 from __future__ import annotations
 
 import pytest
@@ -6,10 +7,10 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from testcontainers.postgres import PostgresContainer
 
-from src.infrastructure.database.models.base import Base
 import src.infrastructure.database.models.reading_item  # noqa: F401
-import src.infrastructure.database.models.review_card   # noqa: F401
+import src.infrastructure.database.models.review_card  # noqa: F401
 import src.infrastructure.database.models.review_history  # noqa: F401
+from src.infrastructure.database.models.base import Base
 
 
 @pytest.fixture(scope="session")
@@ -57,16 +58,13 @@ async def api_client(session_factory: async_sessionmaker[AsyncSession]) -> Async
     app.dependency_overrides[get_db_session] = _override_session
 
     # подменяем LLMClient на фейк
-    from src.domain.llm.client import LLMClient
     from src.presentation.api.dependencies import get_llm_client
     from tests.unit.use_cases.fakes import FakeLLMClient
 
     fake_llm = FakeLLMClient()
     app.dependency_overrides[get_llm_client] = lambda: fake_llm
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as client:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         yield client
 
     app.dependency_overrides.clear()

@@ -1,4 +1,5 @@
 """Карточки на повторение сегодня"""
+
 from __future__ import annotations
 
 import streamlit as st
@@ -55,7 +56,7 @@ grades = [
     (5, "5 — Отлично"),
 ]
 
-for col, (grade_val, label) in zip(cols, grades):
+for col, (grade_val, label) in zip(cols, grades, strict=False):
     if col.button(str(grade_val), help=label, use_container_width=True):
         try:
             api.submit_grade(card_id, grade_val)

@@ -1,5 +1,8 @@
 """Use case: добавление элемента чтения с созданием карточки"""
+
 from __future__ import annotations
+
+from datetime import UTC
 
 import pytest
 
@@ -29,7 +32,7 @@ async def test_creates_item_and_card(use_case: LogReadingItemUseCase) -> None:
 
 
 async def test_card_due_immediately(use_case: LogReadingItemUseCase) -> None:
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     cmd = LogReadingItemCommand.new(
         title="Статья",
@@ -38,7 +41,7 @@ async def test_card_due_immediately(use_case: LogReadingItemUseCase) -> None:
     )
     result = await use_case.execute(cmd)
 
-    assert result.card.due_at <= datetime.now(tz=timezone.utc)
+    assert result.card.due_at <= datetime.now(tz=UTC)
 
 
 async def test_tags_stored(use_case: LogReadingItemUseCase) -> None:

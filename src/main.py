@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from src.container import setup_container
+from src.presentation.api.v1.insights.handlers import router as insights_router
 from src.presentation.api.v1.reading.handlers import router as reading_router
 from src.presentation.api.v1.review.handlers import router as review_router
-from src.presentation.api.v1.insights.handlers import router as insights_router
 
 
 @asynccontextmanager

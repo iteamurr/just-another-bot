@@ -1,4 +1,5 @@
 """Главная страница — навигация"""
+
 import streamlit as st
 
 st.set_page_config(page_title="SpacedReader", page_icon="📚", layout="centered")

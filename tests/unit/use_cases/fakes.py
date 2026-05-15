@@ -1,4 +1,5 @@
 """In-memory реализации DAO и LLMClient для юнит-тестов"""
+
 from __future__ import annotations
 
 from datetime import datetime

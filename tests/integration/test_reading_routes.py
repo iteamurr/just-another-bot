@@ -1,4 +1,5 @@
 """Интеграционные тесты роутов reading"""
+
 from __future__ import annotations
 
 import pytest
@@ -15,9 +16,7 @@ def valid_payload() -> dict[str, object]:
     }
 
 
-async def test_log_reading_item_created(
-    api_client: AsyncClient, valid_payload: dict[str, object]
-) -> None:
+async def test_log_reading_item_created(api_client: AsyncClient, valid_payload: dict[str, object]) -> None:
     response = await api_client.post("/api/v1/reading/items", json=valid_payload)
     assert response.status_code == 201
     data = response.json()
@@ -42,9 +41,7 @@ async def test_list_reading_items_empty(api_client: AsyncClient) -> None:
     assert "total" in data
 
 
-async def test_list_reading_items_returns_created(
-    api_client: AsyncClient, valid_payload: dict[str, object]
-) -> None:
+async def test_list_reading_items_returns_created(api_client: AsyncClient, valid_payload: dict[str, object]) -> None:
     await api_client.post("/api/v1/reading/items", json=valid_payload)
     response = await api_client.get("/api/v1/reading/items")
     assert response.status_code == 200

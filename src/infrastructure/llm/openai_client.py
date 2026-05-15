@@ -36,12 +36,9 @@ class OpenAILLMClient(LLMClient):
         return await self._complete(prompt)
 
     async def generate_weekly_summary(self, *, items: list[ReadingItem]) -> str:
-        lines = "\n".join(
-            f"- {item.title}: {item.takeaway.text}" for item in items
-        )
+        lines = "\n".join(f"- {item.title}: {item.takeaway.text}" for item in items)
         prompt = (
-            "Сделай краткое резюме прочитанного за неделю (2–4 абзаца, на русском).\n\n"
-            f"Список:\n{lines}\n\nРезюме:"
+            "Сделай краткое резюме прочитанного за неделю (2–4 абзаца, на русском).\n\n" f"Список:\n{lines}\n\nРезюме:"
         )
         return await self._complete(prompt)
 

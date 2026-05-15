@@ -1,7 +1,8 @@
 """Use case: сабмит оценки и запись в историю"""
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -11,7 +12,9 @@ from src.use_cases.review.submit_review_grade import SubmitReviewGradeCommand, S
 from tests.unit.use_cases.fakes import InMemoryReviewCardDAO, InMemoryReviewHistoryDAO
 
 
-def _make_use_case(card: ReviewCard | None = None) -> tuple[SubmitReviewGradeUseCase, InMemoryReviewCardDAO, InMemoryReviewHistoryDAO]:
+def _make_use_case(
+    card: ReviewCard | None = None,
+) -> tuple[SubmitReviewGradeUseCase, InMemoryReviewCardDAO, InMemoryReviewHistoryDAO]:
     card_dao = InMemoryReviewCardDAO()
     history_dao = InMemoryReviewHistoryDAO()
     if card is not None:
@@ -24,18 +27,18 @@ def _make_use_case(card: ReviewCard | None = None) -> tuple[SubmitReviewGradeUse
 
 
 async def test_grade_updates_card() -> None:
-    card = ReviewCard(item_id="item-1", due_at=datetime(2020, 1, 1, tzinfo=timezone.utc))
+    card = ReviewCard(item_id="item-1", due_at=datetime(2020, 1, 1, tzinfo=UTC))
     use_case, card_dao, _ = _make_use_case(card)
 
     cmd = SubmitReviewGradeCommand.new(card_id=card.id, grade=5)
     result = await use_case.execute(cmd)
 
     assert result.card.repetitions == 1
-    assert result.card.due_at > datetime.now(tz=timezone.utc)
+    assert result.card.due_at > datetime.now(tz=UTC)
 
 
 async def test_history_entry_appended() -> None:
-    card = ReviewCard(item_id="item-1", due_at=datetime(2020, 1, 1, tzinfo=timezone.utc))
+    card = ReviewCard(item_id="item-1", due_at=datetime(2020, 1, 1, tzinfo=UTC))
     use_case, _, history_dao = _make_use_case(card)
 
     cmd = SubmitReviewGradeCommand.new(card_id=card.id, grade=4)
@@ -64,7 +67,7 @@ async def test_failed_grade_resets_interval() -> None:
 
     card = ReviewCard(
         item_id="item-1",
-        due_at=datetime(2020, 1, 1, tzinfo=timezone.utc),
+        due_at=datetime(2020, 1, 1, tzinfo=UTC),
         repetitions=5,
         interval_days=30,
         ease_factor=EaseFactor(value=2.5),

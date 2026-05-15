@@ -1,16 +1,15 @@
 """SM-2: все ветки алгоритма"""
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
-import pytest
+from datetime import UTC, datetime
 
 from src.domain.review.entities import ReviewCard
 from src.domain.review.value_objects import EaseFactor, Grade
 
 
 def _now() -> datetime:
-    return datetime(2026, 1, 1, tzinfo=timezone.utc)
+    return datetime(2026, 1, 1, tzinfo=UTC)
 
 
 def _card(**kwargs: object) -> ReviewCard:

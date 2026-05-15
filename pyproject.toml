@@ -1,41 +1,38 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-package-mode = false
-
-[project]
+[tool.poetry]
 name = "spacedreader"
 version = "0.1.0"
-requires-python = ">=3.12,<4.0"
-dependencies = [
-    "fastapi==0.115.5",
-    "uvicorn[standard]==0.32.1",
-    "sqlalchemy[asyncio]==2.0.36",
-    "asyncpg==0.30.0",
-    "alembic==1.14.0",
-    "pydantic==2.10.3",
-    "pydantic-settings==2.6.1",
-    "punq==0.6.2",
-    "httpx==0.28.0",
-    "openai==1.57.0",
-    "aiosql==13.3",
-    "pypika==0.48.9",
-    "streamlit==1.40.2",
-]
+description = "Персональный трекер интервального повторения прочитанного"
+authors = []
+packages = [{ include = "src" }]
 
-[project.optional-dependencies]
-dev = [
-    "pytest==8.3.4",
-    "pytest-asyncio==0.24.0",
-    "pytest-cov==6.0.0",
-    "testcontainers[postgres]==4.8.1",
-    "ruff==0.8.4",
-    "mypy==1.13.0",
-    "types-aiofiles==24.1.0.20241221",
-]
+[tool.poetry.dependencies]
+python = ">=3.12,<4.0"
+fastapi = "0.115.5"
+uvicorn = { version = "0.32.1", extras = ["standard"] }
+sqlalchemy = { version = "2.0.36", extras = ["asyncio"] }
+asyncpg = "0.30.0"
+alembic = "1.14.0"
+pydantic = "2.10.3"
+pydantic-settings = "2.6.1"
+punq = "0.6.2"
+httpx = "0.28.0"
+openai = "1.57.0"
+aiosql = "13.3"
+pypika = "0.48.9"
+streamlit = "1.40.2"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src"]
+[tool.poetry.group.dev.dependencies]
+pytest = "8.3.4"
+pytest-asyncio = "0.24.0"
+pytest-cov = "6.0.0"
+testcontainers = { version = "4.8.1", extras = ["postgres"] }
+ruff = "0.8.4"
+mypy = "1.13.0"
+types-aiofiles = "24.1.0.20241221"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

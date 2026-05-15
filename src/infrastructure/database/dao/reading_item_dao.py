@@ -58,8 +58,6 @@ class SqlAlchemyReadingItemDAO(BaseDAO, ReadingItemDAO):
 
     async def count_by_tag(self) -> list[dict[str, int]]:
         tag_col = func.unnest(ReadingItemModel.tags).column_valued("tag")
-        query = (
-            self.session.query(tag_col, func.count().label("count")).group_by(tag_col).order_by(func.count().desc())
-        )
+        query = self.session.query(tag_col, func.count().label("count")).group_by(tag_col).order_by(func.count().desc())
         result = await self.session.execute(query)
         return [{"tag": row.tag, "count": row.count} for row in result]

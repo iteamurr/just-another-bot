@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
 
-if TYPE_CHECKING:
-    from src.domain.reading.entities import ReadingItem
-    from src.use_cases.reading.get_reading_stats import ReadingStatsResult
-    from src.use_cases.reading.list_reading_items import ListReadingItemsResult
+from src.domain.pagination import Pagination
+from src.domain.reading.entities import ReadingItem
+from src.use_cases.reading.get_reading_stats import ReadingStatsResult
+from src.use_cases.reading.list_reading_items import ListReadingItemsResult
 
 
 class ReadingSourceSchema(BaseModel):
@@ -54,12 +53,12 @@ class ListReadingItemsResponse(BaseModel):
     offset: int
 
     @classmethod
-    def from_domain(cls, result: ListReadingItemsResult, *, limit: int, offset: int) -> ListReadingItemsResponse:
+    def from_domain(cls, result: ListReadingItemsResult, *, pagination: Pagination) -> ListReadingItemsResponse:
         return cls(
             items=[ReadingItemResponse.from_domain(i) for i in result.items],
             total=result.total,
-            limit=limit,
-            offset=offset,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
 
 

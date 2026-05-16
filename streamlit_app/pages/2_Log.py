@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-import streamlit_app.api_client as api
+import api_client as api
 
 st.set_page_config(page_title="Журнал — SpacedReader", layout="centered")
 st.title("Журнал")

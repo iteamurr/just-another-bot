@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
 from typing import Self
 
+from src.domain.datetime_provider import IDateTimeProvider
 from src.domain.review.dao import ReviewCardDAO, ReviewHistoryDAO
 from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
 from src.domain.review.exceptions import ReviewCardNotFoundException
@@ -30,6 +30,7 @@ class SubmitReviewGradeResult:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class SubmitReviewGradeUseCase:
     transaction_context: ITransactionContext
+    datetime_provider: IDateTimeProvider
     review_card_dao: ReviewCardDAO
     review_history_dao: ReviewHistoryDAO
 
@@ -39,7 +40,7 @@ class SubmitReviewGradeUseCase:
             if card is None:
                 raise ReviewCardNotFoundException(card_id=command.card_id)
 
-            now = datetime.now(tz=UTC)
+            now = self.datetime_provider.now()
             card.apply_grade(command.grade, now)
 
             entry = ReviewHistoryEntry(

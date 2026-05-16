@@ -3,8 +3,9 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import cast
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 
+from src.domain.pagination import Pagination
 from src.domain.reading.dao import ReadingItemDAO
 from src.domain.reading.entities import ReadingItem
 from src.infrastructure.database.dao.base import BaseDAO
@@ -27,37 +28,41 @@ class SqlAlchemyReadingItemDAO(BaseDAO, ReadingItemDAO):
         self,
         *,
         tag: str | None = None,
-        limit: int = 20,
-        offset: int = 0,
+        pagination: Pagination = Pagination(),
     ) -> list[ReadingItem]:
-        query = self.session.query(ReadingItemModel).order_by(ReadingItemModel.created_at.desc())
+        stmt = select(ReadingItemModel).order_by(ReadingItemModel.created_at.desc())
         if tag is not None:
-            query = query.where(ReadingItemModel.tags.contains([tag]))
-        query = query.limit(limit).offset(offset)
-        result = await self.session.execute(query)
+            stmt = stmt.where(ReadingItemModel.tags.contains([tag]))
+        stmt = stmt.limit(pagination.limit).offset(pagination.offset)
+        result = await self.session.execute(stmt)
         return [cast(ReadingItemModel, m).to_domain() for m in result.scalars()]
 
     async def count(self, *, tag: str | None = None) -> int:
-        query = self.session.query(func.count()).select_from(ReadingItemModel)
+        stmt = select(func.count()).select_from(ReadingItemModel)
         if tag is not None:
-            query = query.where(ReadingItemModel.tags.contains([tag]))
-        result = await self.session.execute(query)
+            stmt = stmt.where(ReadingItemModel.tags.contains([tag]))
+        result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
     async def count_by_week(self) -> list[dict[str, int]]:
         cutoff = datetime.now(tz=UTC) - timedelta(weeks=12)
         week_expr = func.date_trunc("week", ReadingItemModel.created_at)
-        query = (
-            self.session.query(week_expr.label("week"), func.count().label("count"))
+        stmt = (
+            select(week_expr.label("week"), func.count().label("count"))
             .where(ReadingItemModel.created_at >= cutoff)
             .group_by(week_expr)
             .order_by(week_expr)
         )
-        result = await self.session.execute(query)
+        result = await self.session.execute(stmt)
         return [{"week": str(row.week), "count": row.count} for row in result]
 
     async def count_by_tag(self) -> list[dict[str, int]]:
-        tag_col = func.unnest(ReadingItemModel.tags).column_valued("tag")
-        query = self.session.query(tag_col, func.count().label("count")).group_by(tag_col).order_by(func.count().desc())
-        result = await self.session.execute(query)
+        tag_col = func.unnest(ReadingItemModel.tags).label("tag")
+        stmt = (
+            select(tag_col, func.count().label("count"))
+            .select_from(ReadingItemModel)
+            .group_by(tag_col)
+            .order_by(func.count().desc())
+        )
+        result = await self.session.execute(stmt)
         return [{"tag": row.tag, "count": row.count} for row in result]

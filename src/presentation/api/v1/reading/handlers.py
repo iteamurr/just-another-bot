@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 
+from src.domain.pagination import Pagination
 from src.domain.reading.exceptions import InvalidTakeawayLengthException, ReadingItemError
-from src.presentation.api.dependencies import resolve_depends
+from src.presentation.api.dependencies import pagination_depends, resolve_depends
 from src.presentation.api.http_exceptions import DOMAIN_API_HTTP_400
 from src.presentation.api.v1.reading.schemas import (
     ListReadingItemsResponse,
@@ -50,19 +51,18 @@ async def log_reading_item(
     response_model=ListReadingItemsResponse,
 )
 async def list_reading_items(
+    pagination: Pagination = Depends(pagination_depends),
     tag: str | None = Query(default=None),
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
     use_case: ListReadingItemsUseCase = resolve_depends(ListReadingItemsUseCase),
 ) -> ListReadingItemsResponse:
-    query = ListReadingItemsQuery.new(tag=tag, limit=limit, offset=offset)
+    query = ListReadingItemsQuery.new(tag=tag, pagination=pagination)
 
     try:
         result = await use_case.execute(query)
     except ReadingItemError as exc:
         raise DOMAIN_API_HTTP_400(exc) from exc
 
-    return ListReadingItemsResponse.from_domain(result, limit=limit, offset=offset)
+    return ListReadingItemsResponse.from_domain(result, pagination=pagination)
 
 
 @router.get(

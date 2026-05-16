@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from contextvars import ContextVar
-
 import httpx
 import punq
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from src.domain.datetime_provider import IDateTimeProvider
 from src.domain.llm.client import LLMClient
 from src.domain.reading.dao import ReadingItemDAO
 from src.domain.review.dao import ReviewCardDAO, ReviewHistoryDAO
@@ -14,6 +13,7 @@ from src.infrastructure.database.dao.reading_item_dao import SqlAlchemyReadingIt
 from src.infrastructure.database.dao.review_card_dao import SqlAlchemyReviewCardDAO
 from src.infrastructure.database.dao.review_history_dao import SqlAlchemyReviewHistoryDAO
 from src.infrastructure.database.session import build_session_factory
+from src.infrastructure.datetime_provider import UtcDateTimeProvider
 from src.infrastructure.llm.openai_client import OpenAILLMClient
 from src.settings.openai import OpenAISettings
 from src.settings.postgres import PostgresSettings
@@ -26,25 +26,8 @@ from src.use_cases.review.get_due_reviews import GetDueReviewsUseCase
 from src.use_cases.review.get_retention_stats import GetRetentionStatsUseCase
 from src.use_cases.review.submit_review_grade import SubmitReviewGradeUseCase
 
-_request_session: ContextVar[AsyncSession | None] = ContextVar("request_session", default=None)
-
 container: punq.Container = punq.Container()
 _initialized: bool = False
-
-
-def get_request_session() -> AsyncSession:
-    session = _request_session.get()
-    if session is None:
-        raise RuntimeError("Сессия БД не инициализирована для текущего запроса")
-    return session
-
-
-def set_request_session(session: AsyncSession) -> object:
-    return _request_session.set(session)
-
-
-def reset_request_session(token: object) -> None:
-    _request_session.reset(token)  # type: ignore[arg-type]
 
 
 def setup_container() -> None:
@@ -60,6 +43,7 @@ def setup_container() -> None:
     # --- синглтоны ---
     container.register(httpx.AsyncClient, instance=httpx.AsyncClient())
     container.register(async_sessionmaker, instance=session_factory)
+    container.register(IDateTimeProvider, instance=UtcDateTimeProvider())
 
     container.register(
         LLMClient,

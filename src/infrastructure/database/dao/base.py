@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.container import get_request_session
+from src.infrastructure.database.session_context import get_request_session
 
 
 class BaseDAO:

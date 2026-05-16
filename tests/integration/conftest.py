@@ -14,7 +14,8 @@ from testcontainers.postgres import PostgresContainer
 import src.infrastructure.database.models.reading_item  # noqa: F401
 import src.infrastructure.database.models.review_card  # noqa: F401
 import src.infrastructure.database.models.review_history  # noqa: F401
-from src.container import container, reset_request_session, set_request_session
+from src.container import container
+from src.infrastructure.database.session_context import reset_request_session, set_request_session
 from src.domain.llm.client import LLMClient
 from src.domain.transaction import ITransactionContext
 from src.infrastructure.database.models.base import Base

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 
+from src.domain.datetime_provider import IDateTimeProvider
 from src.domain.llm.client import LLMClient
+from src.domain.pagination import Pagination
 from src.domain.reading.dao import ReadingItemDAO
 from src.domain.transaction import ITransactionContext
 
@@ -17,14 +19,15 @@ class GenerateWeeklySummaryResult:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GenerateWeeklySummaryUseCase:
     transaction_context: ITransactionContext
+    datetime_provider: IDateTimeProvider
     reading_item_dao: ReadingItemDAO
     llm_client: LLMClient
 
     async def execute(self) -> GenerateWeeklySummaryResult:
         async with self.transaction_context:
-            items = await self.reading_item_dao.list(limit=200, offset=0)
-            cutoff = datetime.now(tz=UTC) - timedelta(days=7)
-            recent = [i for i in items if i.created_at and i.created_at >= cutoff]
+            items = await self.reading_item_dao.list(pagination=Pagination(limit=200))
+            cutoff = self.datetime_provider.now() - timedelta(days=7)
+            recent = [i for i in items if i.created_at >= cutoff]
 
             if not recent:
                 return GenerateWeeklySummaryResult(

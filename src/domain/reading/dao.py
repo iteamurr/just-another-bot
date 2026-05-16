@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from src.domain.pagination import Pagination
 from src.domain.reading.entities import ReadingItem
 
 
@@ -19,8 +20,7 @@ class ReadingItemDAO(ABC):
         self,
         *,
         tag: str | None = None,
-        limit: int = 20,
-        offset: int = 0,
+        pagination: Pagination = Pagination(),
     ) -> list[ReadingItem]:
         """Возвращает список элементов с фильтрацией по тегу и пагинацией"""
 

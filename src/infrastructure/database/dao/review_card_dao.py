@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import cast
 
-from sqlalchemy import Numeric, case, func
+from sqlalchemy import Numeric, case, func, select
 
 from src.domain.review.dao import RetentionStats, ReviewCardDAO
 from src.domain.review.entities import ReviewCard
@@ -25,30 +25,30 @@ class SqlAlchemyReviewCardDAO(BaseDAO, ReviewCardDAO):
         return model.to_domain()
 
     async def get_by_item_id(self, item_id: str) -> ReviewCard | None:
-        query = self.session.query(ReviewCardModel).where(ReviewCardModel.item_id == item_id).limit(1)
-        result = await self.session.execute(query)
+        stmt = select(ReviewCardModel).where(ReviewCardModel.item_id == item_id).limit(1)
+        result = await self.session.execute(stmt)
         model: ReviewCardModel | None = result.scalar_one_or_none()
         if model is None:
             return None
         return model.to_domain()
 
     async def list_due(self, *, now: datetime, limit: int = 20) -> list[ReviewCard]:
-        query = (
-            self.session.query(ReviewCardModel)
+        stmt = (
+            select(ReviewCardModel)
             .where(ReviewCardModel.due_at <= now)
             .order_by(ReviewCardModel.due_at.asc())
             .limit(limit)
         )
-        result = await self.session.execute(query)
+        result = await self.session.execute(stmt)
         return [cast(ReviewCardModel, m).to_domain() for m in result.scalars()]
 
     async def count_due(self, *, now: datetime) -> int:
-        query = self.session.query(func.count()).select_from(ReviewCardModel).where(ReviewCardModel.due_at <= now)
-        result = await self.session.execute(query)
+        stmt = select(func.count()).select_from(ReviewCardModel).where(ReviewCardModel.due_at <= now)
+        result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
     async def retention_stats(self) -> RetentionStats:
-        query = self.session.query(
+        stmt = select(
             func.round(
                 func.avg(case((ReviewHistoryModel.grade >= 3, 1.0), else_=0.0)).cast(Numeric),
                 4,
@@ -56,7 +56,7 @@ class SqlAlchemyReviewCardDAO(BaseDAO, ReviewCardDAO):
             func.round(func.avg(ReviewHistoryModel.ease_factor_after).cast(Numeric), 4).label("avg_ease_factor"),
             func.count().label("total_reviews"),
         )
-        result = await self.session.execute(query)
+        result = await self.session.execute(stmt)
         row = result.mappings().first()
         if row is None:
             return RetentionStats(overall_retention=0.0, avg_ease_factor=2.5, total_reviews=0)

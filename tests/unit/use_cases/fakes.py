@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import TYPE_CHECKING
+from datetime import UTC, datetime
 
+from src.domain.datetime_provider import IDateTimeProvider
 from src.domain.llm.client import LLMClient
+from src.domain.pagination import Pagination
 from src.domain.reading.dao import ReadingItemDAO
 from src.domain.reading.entities import ReadingItem
 from src.domain.review.dao import RetentionStats, ReviewCardDAO, ReviewHistoryDAO
 from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
-
-if TYPE_CHECKING:
-    pass
 
 
 class InMemoryReadingItemDAO(ReadingItemDAO):
@@ -30,13 +28,12 @@ class InMemoryReadingItemDAO(ReadingItemDAO):
         self,
         *,
         tag: str | None = None,
-        limit: int = 20,
-        offset: int = 0,
+        pagination: Pagination = Pagination(),
     ) -> list[ReadingItem]:
         items = list(self._store.values())
         if tag is not None:
             items = [i for i in items if tag in i.tags]
-        return items[offset : offset + limit]
+        return items[pagination.offset : pagination.offset + pagination.limit]
 
     async def count(self, *, tag: str | None = None) -> int:
         if tag is None:
@@ -85,6 +82,14 @@ class InMemoryReviewHistoryDAO(ReviewHistoryDAO):
 
     async def list_by_card(self, card_id: str) -> list[ReviewHistoryEntry]:
         return [e for e in self._entries if e.card_id == card_id]
+
+
+class FakeDateTimeProvider(IDateTimeProvider):
+    def __init__(self, fixed: datetime | None = None) -> None:
+        self._now = fixed or datetime.now(tz=UTC)
+
+    def now(self) -> datetime:
+        return self._now
 
 
 class FakeLLMClient(LLMClient):

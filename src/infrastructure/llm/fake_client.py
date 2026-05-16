@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from src.domain.llm.client import LLMClient
-
-if TYPE_CHECKING:
-    from src.domain.reading.entities import ReadingItem
+from src.domain.reading.entities import ReadingItem
 
 
 class FakeLLMClient(LLMClient):

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Self
 
+from src.domain.datetime_provider import IDateTimeProvider
 from src.domain.reading.dao import ReadingItemDAO
 from src.domain.reading.entities import ReadingItem
 from src.domain.reading.value_objects import ReadingSource, SourceKind, Takeaway
@@ -49,20 +50,22 @@ class LogReadingItemResult:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class LogReadingItemUseCase:
     transaction_context: ITransactionContext
+    datetime_provider: IDateTimeProvider
     reading_item_dao: ReadingItemDAO
     review_card_dao: ReviewCardDAO
 
     async def execute(self, command: LogReadingItemCommand) -> LogReadingItemResult:
         async with self.transaction_context:
+            now = self.datetime_provider.now()
             item = ReadingItem(
                 title=command.title,
                 source=command.source,
                 takeaway=command.takeaway,
                 tags=list(command.tags),
                 finished_at=command.finished_at,
-                created_at=datetime.now(tz=UTC),
+                created_at=now,
             )
-            card = ReviewCard(item_id=item.id, due_at=datetime.now(tz=UTC))
+            card = ReviewCard(item_id=item.id, due_at=now)
             saved_item = await self.reading_item_dao.save(item)
             saved_card = await self.review_card_dao.save(card)
             return LogReadingItemResult(item=saved_item, card=saved_card)

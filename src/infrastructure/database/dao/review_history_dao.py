@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import cast
 
+from sqlalchemy import select
+
 from src.domain.review.dao import ReviewHistoryDAO
 from src.domain.review.entities import ReviewHistoryEntry
 from src.infrastructure.database.dao.base import BaseDAO
@@ -16,10 +18,10 @@ class SqlAlchemyReviewHistoryDAO(BaseDAO, ReviewHistoryDAO):
         return entry
 
     async def list_by_card(self, card_id: str) -> list[ReviewHistoryEntry]:
-        query = (
-            self.session.query(ReviewHistoryModel)
+        stmt = (
+            select(ReviewHistoryModel)
             .where(ReviewHistoryModel.card_id == card_id)
             .order_by(ReviewHistoryModel.reviewed_at.desc())
         )
-        result = await self.session.execute(query)
+        result = await self.session.execute(stmt)
         return [cast(ReviewHistoryModel, m).to_domain() for m in result.scalars()]

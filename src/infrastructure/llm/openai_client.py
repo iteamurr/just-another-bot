@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import httpx
 from openai import AsyncOpenAI
 
 from src.domain.llm.client import LLMClient
+from src.domain.reading.entities import ReadingItem
 from src.domain.review.exceptions import LLMResponseInvalidException, LLMUnavailableException
-
-if TYPE_CHECKING:
-    from src.domain.reading.entities import ReadingItem
 
 
 class OpenAILLMClient(LLMClient):

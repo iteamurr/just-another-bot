@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
 
-if TYPE_CHECKING:
-    from src.domain.review.entities import ReviewCard
-    from src.use_cases.review.generate_review_question import GenerateReviewQuestionResult
-    from src.use_cases.review.get_due_reviews import GetDueReviewsResult
-    from src.use_cases.review.get_retention_stats import RetentionStatsResult
+from src.domain.review.entities import ReviewCard
+from src.use_cases.review.generate_review_question import GenerateReviewQuestionResult
+from src.use_cases.review.get_due_reviews import GetDueReviewsResult
+from src.use_cases.review.get_retention_stats import RetentionStatsResult
 
 
 class ReviewCardResponse(BaseModel):

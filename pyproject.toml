@@ -18,6 +18,7 @@ punq = "0.6.2"
 httpx = "0.28.0"
 openai = "1.57.0"
 streamlit = "1.40.2"
+setuptools = "<81.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.3.4"

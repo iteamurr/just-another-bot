@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from sqlalchemy import ARRAY, Column, DateTime, String, Text, func
+from sqlalchemy import Column, DateTime, String, Text, func
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from src.domain.reading.entities import ReadingItem
 from src.domain.reading.value_objects import ReadingSource, SourceKind, Takeaway

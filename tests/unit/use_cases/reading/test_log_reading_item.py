@@ -8,12 +8,19 @@ import pytest
 
 from src.domain.reading.exceptions import InvalidTakeawayLengthException
 from src.use_cases.reading.log_reading_item import LogReadingItemCommand, LogReadingItemUseCase
-from tests.unit.use_cases.fakes import InMemoryReadingItemDAO, InMemoryReviewCardDAO
+from tests.unit.use_cases.fakes import (
+    FakeDateTimeProvider,
+    FakeTransactionContext,
+    InMemoryReadingItemDAO,
+    InMemoryReviewCardDAO,
+)
 
 
 @pytest.fixture()
 def use_case() -> LogReadingItemUseCase:
     return LogReadingItemUseCase(
+        transaction_context=FakeTransactionContext(),
+        datetime_provider=FakeDateTimeProvider(),
         reading_item_dao=InMemoryReadingItemDAO(),
         review_card_dao=InMemoryReviewCardDAO(),
     )

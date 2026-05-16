@@ -9,7 +9,12 @@ import pytest
 from src.domain.review.entities import ReviewCard
 from src.domain.review.exceptions import InvalidGradeException, ReviewCardNotFoundException
 from src.use_cases.review.submit_review_grade import SubmitReviewGradeCommand, SubmitReviewGradeUseCase
-from tests.unit.use_cases.fakes import InMemoryReviewCardDAO, InMemoryReviewHistoryDAO
+from tests.unit.use_cases.fakes import (
+    FakeDateTimeProvider,
+    FakeTransactionContext,
+    InMemoryReviewCardDAO,
+    InMemoryReviewHistoryDAO,
+)
 
 
 def _make_use_case(
@@ -20,6 +25,8 @@ def _make_use_case(
     if card is not None:
         card_dao._store[card.id] = card
     use_case = SubmitReviewGradeUseCase(
+        transaction_context=FakeTransactionContext(),
+        datetime_provider=FakeDateTimeProvider(),
         review_card_dao=card_dao,
         review_history_dao=history_dao,
     )

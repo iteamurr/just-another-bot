@@ -52,6 +52,7 @@ def setup_container() -> None:
             api_key=openai_cfg.api_key,
             model=openai_cfg.model,
             timeout_seconds=openai_cfg.timeout_seconds,
+            base_url=openai_cfg.base_url,
         ),
         scope=punq.Scope.singleton,
     )

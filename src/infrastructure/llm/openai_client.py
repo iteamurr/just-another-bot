@@ -16,11 +16,13 @@ class OpenAILLMClient(LLMClient):
         api_key: str,
         model: str,
         timeout_seconds: float,
+        base_url: str | None = None,
     ) -> None:
         self._client = AsyncOpenAI(
             api_key=api_key,
             http_client=http_client,
             timeout=timeout_seconds,
+            base_url=base_url,
         )
         self._model = model
 

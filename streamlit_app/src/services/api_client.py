@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import httpx
 
-_BASE_URL = os.getenv("APP_BACKEND_URL", "http://localhost:8000")
-_TIMEOUT = 30.0
+from src.core.config import BACKEND_URL, REQUEST_TIMEOUT
 
 
 def _client() -> httpx.Client:
-    return httpx.Client(base_url=_BASE_URL, timeout=_TIMEOUT)
+    return httpx.Client(base_url=BACKEND_URL, timeout=REQUEST_TIMEOUT)
 
 
 def log_reading_item(

@@ -5,8 +5,8 @@ from typing import Self
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.infrastructure.database.session_context import reset_request_session, set_request_session
 from src.domain.transaction import ITransactionContext
+from src.infrastructure.database.session_context import reset_request_session, set_request_session
 
 
 class SqlAlchemyTransactionContext(ITransactionContext):

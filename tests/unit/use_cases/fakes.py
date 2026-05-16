@@ -11,6 +11,7 @@ from src.domain.reading.dao import ReadingItemDAO
 from src.domain.reading.entities import ReadingItem
 from src.domain.review.dao import RetentionStats, ReviewCardDAO, ReviewHistoryDAO
 from src.domain.review.entities import ReviewCard, ReviewHistoryEntry
+from src.domain.transaction import ITransactionContext
 
 
 class InMemoryReadingItemDAO(ReadingItemDAO):
@@ -82,6 +83,16 @@ class InMemoryReviewHistoryDAO(ReviewHistoryDAO):
 
     async def list_by_card(self, card_id: str) -> list[ReviewHistoryEntry]:
         return [e for e in self._entries if e.card_id == card_id]
+
+
+class FakeTransactionContext(ITransactionContext):
+    async def __aenter__(self) -> FakeTransactionContext:
+        return self
+
+    async def __aexit__(
+        self, exc_type: type[BaseException] | None, exc_value: BaseException | None, exc_traceback: object
+    ) -> None:
+        pass
 
 
 class FakeDateTimeProvider(IDateTimeProvider):

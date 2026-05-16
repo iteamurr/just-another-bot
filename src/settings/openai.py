@@ -7,3 +7,4 @@ class OpenAISettings(BaseSettings):
     api_key: str = "sk-fake"
     model: str = "gpt-4o-mini"
     timeout_seconds: float = 30.0
+    base_url: str | None = None

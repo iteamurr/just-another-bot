@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -18,7 +19,7 @@ class Grade:
 class EaseFactor:
     value: float
 
-    FLOOR: float = 1.3
+    FLOOR: ClassVar[float] = 1.3
 
     def __post_init__(self) -> None:
         # SM-2: EF не опускается ниже 1.3

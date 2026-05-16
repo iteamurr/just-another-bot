@@ -11,4 +11,4 @@ RUN poetry install --without dev --no-root
 
 COPY streamlit_app/ streamlit_app/
 
-CMD ["poetry", "run", "streamlit", "run", "streamlit_app/Home.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["sh", "-c", "cd /app/streamlit_app && poetry run streamlit run app.py --server.port=8501 --server.address=0.0.0.0"]
